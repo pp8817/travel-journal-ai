@@ -1,9 +1,7 @@
-package com.travel.diary.model;
+package com.travel.domain.diary.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "emotions")
@@ -16,7 +14,7 @@ public class Emotion {
     @Id
     @GeneratedValue
     @Column(name = "emotion_id")
-    private UUID id;
+    private Long id;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;

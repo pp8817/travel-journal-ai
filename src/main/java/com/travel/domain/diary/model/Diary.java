@@ -1,4 +1,4 @@
-package com.travel.diary.model;
+package com.travel.domain.diary.model;
 
 import com.travel.global.BaseEntity;
 import jakarta.persistence.*;
@@ -7,7 +7,6 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -30,7 +29,7 @@ public class Diary extends BaseEntity{
     private String title;
 
     @Column(name = "travel_date", nullable = false)
-    private LocalDate travelDate;
+    private LocalDate travelDate; // 현재 일기가 몇 일차인지
 
     @Column(name = "location", nullable = false)
     private String location;

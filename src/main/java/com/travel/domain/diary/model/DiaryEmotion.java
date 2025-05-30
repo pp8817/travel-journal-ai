@@ -1,4 +1,4 @@
-package com.travel.diary.model;
+package com.travel.domain.diary.model;
 
 import jakarta.persistence.*;
 import lombok.*;
