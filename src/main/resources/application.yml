@@ -1,7 +1,21 @@
 spring:
-  application:
-    name: travel-journal-ai
+  profiles:
+    active: dev
+  jackson:
+    time-zone: Asia/Seoul
+    date-format: yyyy-MM-dd HH:mm:ss
+  config:
+    import: optional:file:.env[.properties]
+  cache:
+    type: simple
+  web:
+    resources:
+      add-mappings: false
 
+server:
+  port: 8080
+  application:
+    name: "travel-journal-ai"
 
 ai:
   server:
