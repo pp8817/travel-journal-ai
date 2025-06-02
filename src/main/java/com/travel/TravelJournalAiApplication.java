@@ -1,9 +1,13 @@
-package com.travel.travel_journal_ai;
+package com.travel;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
+@Configuration
+@EnableJpaAuditing
 public class TravelJournalAiApplication {
 
 	public static void main(String[] args) {
