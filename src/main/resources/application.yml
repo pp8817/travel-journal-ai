@@ -19,4 +19,4 @@ server:
 
 ai:
   server:
-    url: http://localhost:8081/api/diary/generate
+    url: https://c3ff-112-220-214-70.ngrok-free.app
