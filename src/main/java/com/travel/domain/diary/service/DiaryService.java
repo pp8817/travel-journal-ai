@@ -1,5 +1,6 @@
 package com.travel.domain.diary.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Emotion;
 import com.travel.domain.diary.repository.DiaryRepository;
@@ -32,15 +33,25 @@ public class DiaryService {
                 .emotions(request.emotions())
                 .weather(request.weather())
                 .companion(request.companion())
+                .image(request.image())
                 .build();
+
+        // ✅ 여기에 로그 출력 추가
+        try {
+            System.out.println("📤 AI 요청 JSON: " + new ObjectMapper().writeValueAsString(aiRequest));
+        } catch (Exception e) {
+            e.printStackTrace(); // JSON 직렬화 실패 시 로그 확인용
+        }
 
         // 2. AI 서버 호출
         AiDiaryResponse aiResponse = aiClient.generate(aiRequest);
 
+        System.out.println("📤 AI 응답: " + aiResponse.diary());
+
         // 3. Diary 생성 및 감정 연관 연결
         Diary diary = Diary.builder()
                 .title("제목 없음") // 후처리로 바꾸기 가능
-                .content(aiResponse.content())
+                .content(aiResponse.diary())
                 .travelDate(request.date())
                 .location(request.location())
                 .weather(request.weather())

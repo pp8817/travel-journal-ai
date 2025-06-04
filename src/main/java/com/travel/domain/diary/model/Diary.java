@@ -45,6 +45,7 @@ public class Diary extends BaseEntity{
     private Visibility visibility = Visibility.PRIVATE; // 기본값: private으로 설정, 논의 후 수정 필요
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<DiaryEmotion> diaryEmotions = new ArrayList<>();
 
     public void addEmotion(Emotion emotion) {
