@@ -9,7 +9,7 @@ spring:
       minimum-idle: 2
       idle-timeout: 30000
       max-lifetime: 1800000
-      keepalive-time: 30000
+      keepalive-time: 30000d
       connection-timeout: 20000
       validation-timeout: 5000
       connection-test-query: SELECT 1
