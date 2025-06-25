@@ -1,19 +1,18 @@
 package com.travel.domain.diary.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Emotion;
 import com.travel.domain.diary.repository.DiaryRepository;
 import com.travel.domain.diary.repository.EmotionRepository;
+import com.travel.domain.diary.util.DiaryMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import static com.travel.domain.diary.dto.DiaryDto.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -25,39 +24,16 @@ public class DiaryService {
 
     @Transactional
     public DiaryResponse createDiary(CreateDiaryRequest request) {
-
-        // 1. AI 요청용 DTO 만들기
-        AiDiaryRequest aiRequest = AiDiaryRequest.builder()
-                .date(formatDate(request.date())) // "yyyy년 MM월 dd일"
-                .location(request.location())
-                .emotions(request.emotions())
-                .weather(request.weather())
-                .companion(request.companion())
-                .image(request.image())
-                .build();
-
-        // ✅ 여기에 로그 출력 추가
-        try {
-            System.out.println("📤 AI 요청 JSON: " + new ObjectMapper().writeValueAsString(aiRequest));
-        } catch (Exception e) {
-            e.printStackTrace(); // JSON 직렬화 실패 시 로그 확인용
-        }
+        // 1. AI 요청 DTO 생성
+        AiDiaryRequest aiRequest = DiaryMapper.toAiDiaryRequest(request);
+        log.debug("📤 AI 요청 DTO: {}", aiRequest);
 
         // 2. AI 서버 호출
         AiDiaryResponse aiResponse = aiClient.generate(aiRequest);
+        log.debug("📥 AI 응답: {}", aiResponse.diary());
 
-        System.out.println("📤 AI 응답: " + aiResponse.diary());
-
-        // 3. Diary 생성 및 감정 연관 연결
-        Diary diary = Diary.builder()
-                .title("제목 없음") // 후처리로 바꾸기 가능
-                .content(aiResponse.diary())
-                .travelDate(request.date())
-                .location(request.location())
-                .weather(request.weather())
-                .companion(request.companion())
-                .visibility(request.visibility())
-                .build();
+        // 3. Diary 엔티티 생성
+        Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse.diary());
 
         // 4. 감정 키워드 연결
         for (String emotionKeyword : request.emotions()) {
@@ -78,9 +54,5 @@ public class DiaryService {
                 saved.getContent(),
                 saved.getId()
         );
-    }
-
-    private String formatDate(LocalDate date) {
-        return date.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
     }
 }
