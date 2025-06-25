@@ -1,5 +1,9 @@
 package com.travel.domain.diary.service;
 
+import com.travel.domain.diary.dto.request.AiDiaryRequest;
+import com.travel.domain.diary.dto.request.CreateDiaryRequest;
+import com.travel.domain.diary.dto.response.AiDiaryResponse;
+import com.travel.domain.diary.dto.response.DiaryResponse;
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Emotion;
 import com.travel.domain.diary.repository.DiaryRepository;
@@ -10,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static com.travel.domain.diary.dto.DiaryDto.*;
 
 @Slf4j
 @Service
