@@ -1,11 +1,10 @@
 package com.travel.domain.diary.service;
 
+import com.travel.domain.diary.dto.request.AiDiaryRequest;
+import com.travel.domain.diary.dto.response.AiDiaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import static com.travel.domain.diary.dto.DiaryDto.AiDiaryRequest;
-import static com.travel.domain.diary.dto.DiaryDto.AiDiaryResponse;
 
 @Component
 @RequiredArgsConstructor
