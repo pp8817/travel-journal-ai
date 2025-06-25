@@ -1,0 +1,39 @@
+package com.travel.domain.diary.util;
+
+import com.travel.domain.diary.dto.DiaryDto;
+import com.travel.domain.diary.model.Diary;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class DiaryMapper {
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+
+    public static DiaryDto.AiDiaryRequest toAiDiaryRequest(DiaryDto.CreateDiaryRequest request) {
+        return DiaryDto.AiDiaryRequest.builder()
+                .date(formatDate(request.date()))
+                .location(request.location())
+                .emotions(request.emotions())
+                .weather(request.weather())
+                .companion(request.companion())
+                .image(request.image())
+                .build();
+    }
+
+    public static Diary toDiaryEntity(DiaryDto.CreateDiaryRequest request, String content) {
+        return Diary.builder()
+                .title("제목 없음") // 추후 개선
+                .content(content)
+                .travelDate(request.date())
+                .location(request.location())
+                .weather(request.weather())
+                .companion(request.companion())
+                .visibility(request.visibility())
+                .build();
+    }
+
+    private static String formatDate(LocalDate date) {
+        return date.format(FORMATTER);
+    }
+}
