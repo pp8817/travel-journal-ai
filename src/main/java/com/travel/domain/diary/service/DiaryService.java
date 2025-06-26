@@ -3,6 +3,7 @@ package com.travel.domain.diary.service;
 import com.travel.domain.diary.dto.request.AiDiaryRequest;
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
 import com.travel.domain.diary.dto.response.AiDiaryResponse;
+import com.travel.domain.diary.dto.response.DiaryDetailDto;
 import com.travel.domain.diary.dto.response.DiaryResponse;
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Emotion;
@@ -48,16 +49,10 @@ public class DiaryService {
                 saved.getId()
         );
     }
-    public DiaryResponse getDiaryById(Long id) {
+    public DiaryDetailDto getDiaryById(Long id) {
         Diary diary = diaryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 일기를 찾을 수 없습니다."));
 
-        return new DiaryResponse(
-                diary.getCreatedAt(),         // createdAt
-                200,                          // resultCode (예시: 성공 코드)
-                "일기 조회 성공",             // message
-                diary.getContent(),           // content
-                diary.getId()                 // diaryId
-        );
+        return DiaryMapper.toDiaryDetailDto(diary);
     }
 }
