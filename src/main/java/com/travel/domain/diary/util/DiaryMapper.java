@@ -2,7 +2,6 @@ package com.travel.domain.diary.util;
 
 import com.travel.domain.diary.dto.request.AiDiaryRequest;
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
-import com.travel.domain.diary.dto.response.DiaryDetailDto;
 import com.travel.domain.diary.model.Diary;
 
 import java.time.LocalDate;
@@ -37,9 +36,5 @@ public class DiaryMapper {
 
     private static String formatDate(LocalDate date) {
         return date.format(FORMATTER);
-    }
-
-    public static DiaryDetailDto toDiaryDetailDto(Diary diary) {
-        return DiaryDetailDto.from(diary);
     }
 }
