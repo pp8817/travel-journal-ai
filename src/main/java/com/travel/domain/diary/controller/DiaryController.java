@@ -1,15 +1,13 @@
 package com.travel.domain.diary.controller;
 
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
+import com.travel.domain.diary.dto.response.DiaryDetailDto;
 import com.travel.domain.diary.dto.response.DiaryResponse;
 import com.travel.domain.diary.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -25,8 +23,8 @@ public class DiaryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<DiaryResponse> getDiary(@PathVariable Long id) {
-        DiaryResponse response = diaryService.getDiaryById(id);
+    public ResponseEntity<DiaryDetailDto> getDiary(@PathVariable Long id) {
+        DiaryDetailDto response = diaryService.getDiaryById(id);
         return ResponseEntity.ok(response);
     }
 }

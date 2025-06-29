@@ -1,65 +1,48 @@
 package com.travel.domain.diary.service;
 
+import com.travel.domain.diary.dto.request.AiDiaryRequest;
+import com.travel.domain.diary.dto.request.CreateDiaryRequest;
+import com.travel.domain.diary.dto.response.AiDiaryResponse;
+import com.travel.domain.diary.dto.response.DiaryDetailDto;
+import com.travel.domain.diary.dto.response.DiaryResponse;
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Emotion;
 import com.travel.domain.diary.repository.DiaryRepository;
-import com.travel.domain.diary.repository.EmotionRepository;
+import com.travel.domain.diary.util.DiaryMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
-import static com.travel.domain.diary.dto.DiaryDto.*;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class DiaryService {
 
     private final DiaryRepository diaryRepository;
-    private final EmotionRepository emotionRepository;
+    private final EmotionService emotionService;
     private final AiClient aiClient;
 
     @Transactional
     public DiaryResponse createDiary(CreateDiaryRequest request) {
+        AiDiaryRequest aiRequest = DiaryMapper.toAiDiaryRequest(request);
+        log.debug("📤 AI 요청 DTO: {}", aiRequest);
 
-        // 1. AI 요청용 DTO 만들기
-        AiDiaryRequest aiRequest = AiDiaryRequest.builder()
-                .date(formatDate(request.date())) // "yyyy년 MM월 dd일"
-                .location(request.location())
-                .emotions(request.emotions())
-                .weather(request.weather())
-                .companion(request.companion())
-                .build();
-
-        // 2. AI 서버 호출
         AiDiaryResponse aiResponse = aiClient.generate(aiRequest);
+        log.debug("📥 AI 응답: {}", aiResponse.diary());
 
-        // 3. Diary 생성 및 감정 연관 연결
-        Diary diary = Diary.builder()
-                .title("제목 없음") // 후처리로 바꾸기 가능
-                .content(aiResponse.content())
-                .travelDate(request.date())
-                .location(request.location())
-                .weather(request.weather())
-                .companion(request.companion())
-                .visibility(request.visibility())
-                .build();
+        Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse.diary());
 
-        // 4. 감정 키워드 연결
-        for (String emotionKeyword : request.emotions()) {
-            Emotion emotion = emotionRepository.findByName(emotionKeyword)
-                    .orElseGet(() -> emotionRepository.save(
-                            Emotion.builder().name(emotionKeyword).build()));
-            diary.addEmotion(emotion);
-        }
+        List<Emotion> emotions = emotionService.findOrCreateAll(request.emotions());
+        emotions.forEach(diary::addEmotion);
 
-        // 5. 저장
         Diary saved = diaryRepository.save(diary);
 
-        // 6. 응답 생성
         return new DiaryResponse(
                 saved.getCreatedAt(),
                 200,
@@ -69,7 +52,16 @@ public class DiaryService {
         );
     }
 
+
+
     private String formatDate(LocalDate date) {
         return date.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+    }
+
+    public DiaryDetailDto getDiaryById(Long id) {
+        Diary diary = diaryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 일기를 찾을 수 없습니다."));
+
+        return DiaryMapper.toDiaryDetailDto(diary);
     }
 }
