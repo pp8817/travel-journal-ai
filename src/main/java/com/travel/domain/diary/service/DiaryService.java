@@ -3,6 +3,7 @@ package com.travel.domain.diary.service;
 import com.travel.domain.diary.dto.request.AiDiaryRequest;
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
 import com.travel.domain.diary.dto.response.AiDiaryResponse;
+import com.travel.domain.diary.dto.response.DiaryDetailDto;
 import com.travel.domain.diary.dto.response.DiaryResponse;
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Emotion;
@@ -13,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -47,5 +50,18 @@ public class DiaryService {
                 saved.getContent(),
                 saved.getId()
         );
+    }
+
+
+
+    private String formatDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+    }
+
+    public DiaryDetailDto getDiaryById(Long id) {
+        Diary diary = diaryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 일기를 찾을 수 없습니다."));
+
+        return DiaryMapper.toDiaryDetailDto(diary);
     }
 }

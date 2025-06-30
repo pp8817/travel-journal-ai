@@ -3,6 +3,7 @@ package com.travel.domain.diary.model;
 import com.travel.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,6 +21,13 @@ public class Diary extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "diary_id")
     private Long id;
+
+    //유저 아이디
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+    //이미지
+    @Column(name = "image_url", nullable = false)
+    private String imgUrl;
 
     @Lob
     @Column(name = "content", nullable = false)
@@ -56,4 +64,7 @@ public class Diary extends BaseEntity{
         this.diaryEmotions.add(link);
     }
 
+    public String getImageUrl() {
+        return this.imgUrl;
+    }
 }
