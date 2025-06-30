@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -50,12 +48,6 @@ public class DiaryService {
                 saved.getContent(),
                 saved.getId()
         );
-    }
-
-
-
-    private String formatDate(LocalDate date) {
-        return date.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
     }
 
     public DiaryDetailDto getDiaryById(Long id) {
