@@ -2,10 +2,12 @@ package com.travel.domain.diary.dto.response;
 
 
 import com.travel.domain.diary.model.Diary;
+import com.travel.domain.diary.model.DiaryEmotion;
 import com.travel.domain.diary.model.Visibility;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record DiaryDetailDto(
         Long diaryId,
@@ -19,17 +21,12 @@ public record DiaryDetailDto(
         LocalDateTime updatedAt,
         Visibility visibility,
         String imageUrl,
-        String emotion
+        List<DiaryEmotion> emotions
 ) {
     public static DiaryDetailDto from(Diary diary) {
         String imageUrl = null;
         if (diary.getImageUrl() != null && !diary.getImageUrl().isEmpty()) {
             imageUrl = diary.getImageUrl();  // 첫 번째 이미지 URL 사용
-        }
-
-        String emotion = null;
-        if (diary.getDiaryEmotions() != null && !diary.getDiaryEmotions().isEmpty()) {
-            emotion = diary.getDiaryEmotions().get(0).getEmotion().getName();  // 첫 번째 감정만 사용
         }
 
         return new DiaryDetailDto(
@@ -44,7 +41,7 @@ public record DiaryDetailDto(
                 diary.getUpdatedAt(),
                 diary.getVisibility(),
                 imageUrl,
-                emotion
+                diary.getDiaryEmotions()
         );
     }
 }
