@@ -32,6 +32,7 @@ public class DiaryMapper {
                 .weather(request.weather())
                 .companion(request.companion())
                 .visibility(request.visibility())
+                .imgUrl(request.image())
                 .build();
     }
 
