@@ -2,6 +2,7 @@ package com.travel.domain.diary.controller;
 
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
 import com.travel.domain.diary.dto.response.DiaryDetailDto;
+import com.travel.domain.diary.dto.response.DiaryListDto;
 import com.travel.domain.diary.dto.response.DiaryResponse;
 import com.travel.domain.diary.service.DiaryService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 @RestController
@@ -26,9 +29,16 @@ public class DiaryController {
         DiaryResponse response = diaryService.createDiary(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<DiaryDetailDto> getDiary(@PathVariable Long id) {
         DiaryDetailDto response = diaryService.getDiaryById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<DiaryListDto>> diaryList() {
+        List<DiaryListDto> response = diaryService.getDiaryListByPublic();
         return ResponseEntity.ok(response);
     }
 }

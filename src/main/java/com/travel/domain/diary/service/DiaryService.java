@@ -4,9 +4,11 @@ import com.travel.domain.diary.dto.request.AiDiaryRequest;
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
 import com.travel.domain.diary.dto.response.AiDiaryResponse;
 import com.travel.domain.diary.dto.response.DiaryDetailDto;
+import com.travel.domain.diary.dto.response.DiaryListDto;
 import com.travel.domain.diary.dto.response.DiaryResponse;
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Emotion;
+import com.travel.domain.diary.model.Visibility;
 import com.travel.domain.diary.repository.DiaryRepository;
 import com.travel.domain.diary.util.DiaryMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -55,5 +58,13 @@ public class DiaryService {
                 .orElseThrow(() -> new RuntimeException("해당 일기를 찾을 수 없습니다."));
 
         return DiaryMapper.toDiaryDetailDto(diary);
+    }
+
+    public List<DiaryListDto> getDiaryListByPublic() {
+        // 최신순으로 정렬
+        List<Diary> diaries = diaryRepository.findAllByVisibilityOrderByCreatedAtDesc(Visibility.PUBLIC);
+        return diaries.stream()
+                .map(DiaryListDto::from)
+                .collect(Collectors.toList());
     }
 }
