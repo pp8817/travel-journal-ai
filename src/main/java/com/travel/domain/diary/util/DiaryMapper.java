@@ -17,8 +17,6 @@ public class DiaryMapper {
                 .date(formatDate(request.date()))
                 .location(request.location())
                 .emotions(request.emotions())
-                .weather(request.weather())
-                .companion(request.companion())
                 .image(request.image())
                 .build();
     }
@@ -29,8 +27,6 @@ public class DiaryMapper {
                 .content(content)
                 .travelDate(request.date())
                 .location(request.location())
-                .weather(request.weather())
-                .companion(request.companion())
                 .visibility(request.visibility())
                 .imgUrl(request.image())
                 .build();
