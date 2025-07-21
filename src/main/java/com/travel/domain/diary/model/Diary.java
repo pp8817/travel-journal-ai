@@ -38,8 +38,8 @@ public class Diary extends BaseEntity{
     @Column(name = "visibility", nullable = false)
     private Visibility visibility = Visibility.PRIVATE; // 기본값: private으로 설정, 논의 후 수정 필요
 
-    @Column(name = "image_url", nullable = false)
-    private String imgUrl;
+//    @Column(name = "images", nullable = false)
+    private List<String> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -54,7 +54,7 @@ public class Diary extends BaseEntity{
         this.diaryEmotions.add(link);
     }
 
-    public String getImageUrl() {
-        return this.imgUrl;
+    public List<String> getImages() {
+        return this.images;
     }
 }

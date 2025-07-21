@@ -6,8 +6,7 @@ import java.util.List;
 
 public record CreateDiaryRequest(
         LocalDate date,
-        String location,
         List<String> emotions,
         Visibility visibility,
-        String image
+        List<String> images
 ) {}

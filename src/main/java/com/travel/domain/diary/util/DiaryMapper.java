@@ -15,9 +15,8 @@ public class DiaryMapper {
     public static AiDiaryRequest toAiDiaryRequest(CreateDiaryRequest request) {
         return AiDiaryRequest.builder()
                 .date(formatDate(request.date()))
-                .location(request.location())
                 .emotions(request.emotions())
-                .image(request.image())
+                .images(request.images())
                 .build();
     }
 
@@ -26,9 +25,8 @@ public class DiaryMapper {
                 .title("제목 없음") // 추후 개선
                 .content(content)
                 .travelDate(request.date())
-                .location(request.location())
                 .visibility(request.visibility())
-                .imgUrl(request.image())
+                .images(request.images())
                 .build();
     }
 
