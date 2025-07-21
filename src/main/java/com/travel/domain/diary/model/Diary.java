@@ -54,7 +54,7 @@ public class Diary extends BaseEntity{
         this.diaryEmotions.add(link);
     }
 
-    public List<String> getImages() {
-        return this.images;
+    public void addAllImage(List<String> images) {
+        this.images.addAll(images);
     }
 }

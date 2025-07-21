@@ -21,13 +21,14 @@ public class DiaryMapper {
     }
 
     public static Diary toDiaryEntity(CreateDiaryRequest request, String content) {
-        return Diary.builder()
+        Diary diary = Diary.builder()
                 .title("제목 없음") // 추후 개선
                 .content(content)
                 .travelDate(request.date())
                 .visibility(request.visibility())
-                .images(request.images())
                 .build();
+        diary.addAllImage(request.images());
+        return diary;
     }
 
     private static String formatDate(LocalDate date) {
