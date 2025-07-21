@@ -15,25 +15,20 @@ public class DiaryMapper {
     public static AiDiaryRequest toAiDiaryRequest(CreateDiaryRequest request) {
         return AiDiaryRequest.builder()
                 .date(formatDate(request.date()))
-                .location(request.location())
                 .emotions(request.emotions())
-                .weather(request.weather())
-                .companion(request.companion())
-                .image(request.image())
+                .images(request.images())
                 .build();
     }
 
     public static Diary toDiaryEntity(CreateDiaryRequest request, String content) {
-        return Diary.builder()
+        Diary diary = Diary.builder()
                 .title("제목 없음") // 추후 개선
                 .content(content)
                 .travelDate(request.date())
-                .location(request.location())
-                .weather(request.weather())
-                .companion(request.companion())
                 .visibility(request.visibility())
-                .imgUrl(request.image())
                 .build();
+        diary.addAllImage(request.images());
+        return diary;
     }
 
     private static String formatDate(LocalDate date) {

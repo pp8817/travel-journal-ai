@@ -45,11 +45,8 @@ public class DiaryService {
         Diary saved = diaryRepository.save(diary);
 
         return new DiaryResponse(
-                saved.getCreatedAt(),
-                200,
-                "일기가 성공적으로 생성되었습니다.",
-                saved.getContent(),
-                saved.getId()
+                saved.getId(),
+                null // image GPS 데이터 추출 로직 추가 이후 수정
         );
     }
 
