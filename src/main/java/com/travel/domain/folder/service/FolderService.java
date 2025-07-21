@@ -19,8 +19,6 @@ public class FolderService {
                 .title(dto.getTitle())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
-                .country(dto.getCountry())
-//                .imageUrl(dto.getImage()) // 이미지 URL
                 .build();
 
         folderRepository.save(folder);

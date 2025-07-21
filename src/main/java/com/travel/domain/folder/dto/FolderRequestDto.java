@@ -9,5 +9,4 @@ public class FolderRequestDto {
     private String title;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String country;
 }
