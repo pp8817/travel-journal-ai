@@ -2,17 +2,17 @@ package com.travel.domain.diary.service;
 
 import com.travel.domain.diary.dto.request.AiDiaryRequest;
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
-import com.travel.domain.diary.dto.response.AiDiaryResponse;
-import com.travel.domain.diary.dto.response.DiaryDetailDto;
-import com.travel.domain.diary.dto.response.DiaryListDto;
-import com.travel.domain.diary.dto.response.DiaryResponse;
+import com.travel.domain.diary.dto.response.*;
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Emotion;
 import com.travel.domain.diary.model.Visibility;
 import com.travel.domain.diary.repository.DiaryRepository;
 import com.travel.domain.diary.util.DiaryMapper;
+import com.travel.global.util.AiDiaryRequestFactory;
+import com.travel.global.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +29,11 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final EmotionService emotionService;
     private final AiClient aiClient;
+    private final ImageUtil imageUtil;
+    private AiDiaryRequestFactory aiDiaryRequestFactory;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     /**
      * 추가 필요 작업
@@ -38,23 +43,25 @@ public class DiaryService {
      */
     @Transactional
     public DiaryResponse createDiary(CreateDiaryRequest request, List<MultipartFile> images) {
-        AiDiaryRequest aiRequest = DiaryMapper.toAiDiaryRequest(request);
-        log.debug("📤 AI 요청 DTO: {}", aiRequest);
+        // 1. 이미지 저장 및 메타데이터 추출
+        List<String> savedPaths = imageUtil.saveImages(images, uploadDir);
+        List<PinResponse> pinResponses = imageUtil.extractMetadata(images);
 
+        // 2. AI 요청 생성 및 호출
+        String base64Image = imageUtil.encodeFirstImageToBase64(images);
+        AiDiaryRequest aiRequest = aiDiaryRequestFactory.create(request, base64Image);
+        log.debug("📤 AI 요청 DTO: {}", aiRequest);
         AiDiaryResponse aiResponse = aiClient.generate(aiRequest);
         log.debug("📥 AI 응답: {}", aiResponse.diary());
 
-        Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse.diary());
-
+        // 3. 일기 저장
+        Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse.diary(), savedPaths);
         List<Emotion> emotions = emotionService.findOrCreateAll(request.emotions());
         emotions.forEach(diary::addEmotion);
-
         Diary saved = diaryRepository.save(diary);
 
-        return new DiaryResponse(
-                saved.getId(),
-                null // image GPS 데이터 추출 로직 추가 이후 수정
-        );
+        // 4. 응답 반환
+        return new DiaryResponse(saved.getId(), pinResponses);
     }
 
     public DiaryDetailDto getDiaryById(Long id) {

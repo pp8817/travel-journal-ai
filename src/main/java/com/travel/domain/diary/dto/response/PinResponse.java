@@ -3,8 +3,8 @@ package com.travel.domain.diary.dto.response;
 import java.time.LocalDateTime;
 
 public record PinResponse(
-        double latitude,
-        double longitude,
+        Double latitude,
+        Double longitude,
         LocalDateTime timestamp,
         String fileName
 ) {}
