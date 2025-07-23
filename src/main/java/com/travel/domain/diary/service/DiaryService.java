@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,8 +30,14 @@ public class DiaryService {
     private final EmotionService emotionService;
     private final AiClient aiClient;
 
+    /**
+     * 추가 필요 작업
+     * - 여러 장의 이미지를 입력 받은 경우 첫 장만 AI 서버로 전송
+     * - 각 image의 위치 정보와 시간 정보 추출 로직
+     * - 입력 받은 MutipartFile 형식의 이미지를 임의 경로에 저장한 후 imagePath 생성 후 Diary 엔티티에 저장
+     */
     @Transactional
-    public DiaryResponse createDiary(CreateDiaryRequest request) {
+    public DiaryResponse createDiary(CreateDiaryRequest request, List<MultipartFile> images) {
         AiDiaryRequest aiRequest = DiaryMapper.toAiDiaryRequest(request);
         log.debug("📤 AI 요청 DTO: {}", aiRequest);
 
