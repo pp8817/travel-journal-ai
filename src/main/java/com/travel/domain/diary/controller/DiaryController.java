@@ -7,12 +7,10 @@ import com.travel.domain.diary.dto.response.DiaryResponse;
 import com.travel.domain.diary.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,9 +22,12 @@ public class DiaryController {
 
     private final DiaryService diaryService;
 
-    @PostMapping
-    public ResponseEntity<DiaryResponse> createDiary(@RequestBody CreateDiaryRequest request) {
-        DiaryResponse response = diaryService.createDiary(request);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DiaryResponse> createDiary(
+            @RequestPart("data") CreateDiaryRequest request,
+            @RequestPart("images") List<MultipartFile> images
+    ) {
+        DiaryResponse response = diaryService.createDiary(request, images);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
