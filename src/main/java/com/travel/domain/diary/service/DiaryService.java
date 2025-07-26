@@ -13,10 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import com.travel.domain.diary.service.PhotoMetadataService;
-
+import com.travel.domain.diary.dto.response.AiDiaryResponse;
+import com.travel.domain.diary.dto.response.DiaryDetailDto;
+import com.travel.domain.diary.dto.response.DiaryListDto;
+import com.travel.domain.diary.dto.response.DiaryResponse;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,8 @@ public class DiaryService {
     private final EmotionService emotionService;
     private final AiClient aiClient;
     private final PhotoMetadataService metadataService;
+
+
 
     /**
      * 추가 필요 작업
@@ -55,12 +58,7 @@ public class DiaryService {
         // 이미지 메타데이터 추출
 
         List<PinResponse> pins;
-        try {
-                pins = metadataService.extractPins(images);
-            } catch (IOException e) {
-                log.warn("이미지 메타데이터 추출 실패: {}", e.getMessage());
-                pins = Collections.emptyList();
-            }
+        pins = metadataService.extractPins(images);
         return new DiaryResponse(saved.getId(), pins);
     }
 
