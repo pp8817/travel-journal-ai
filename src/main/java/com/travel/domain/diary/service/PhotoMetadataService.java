@@ -9,13 +9,12 @@ import com.travel.domain.diary.dto.response.PinResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.*;
 
 @Service
 public class PhotoMetadataService {
 
-    public List<PinResponse> extractPins(List<MultipartFile> images) throws IOException {
+    public List<PinResponse> extractPins(List<MultipartFile> images) {
         List<PinResponse> pins = new ArrayList<>();
 
         for (MultipartFile file : images) {
