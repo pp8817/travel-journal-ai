@@ -2,10 +2,7 @@ package com.travel.domain.diary.service;
 
 import com.travel.domain.diary.dto.request.AiDiaryRequest;
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
-import com.travel.domain.diary.dto.response.AiDiaryResponse;
-import com.travel.domain.diary.dto.response.DiaryDetailDto;
-import com.travel.domain.diary.dto.response.DiaryListDto;
-import com.travel.domain.diary.dto.response.DiaryResponse;
+import com.travel.domain.diary.dto.response.*;
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Emotion;
 import com.travel.domain.diary.model.Visibility;
@@ -16,7 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import com.travel.domain.diary.service.PhotoMetadataService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +28,7 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final EmotionService emotionService;
     private final AiClient aiClient;
+    private final PhotoMetadataService metadataService;
 
     /**
      * 추가 필요 작업
@@ -37,7 +37,7 @@ public class DiaryService {
      * - 입력 받은 MutipartFile 형식의 이미지를 임의 경로에 저장한 후 imagePath 생성 후 Diary 엔티티에 저장
      */
     @Transactional
-    public DiaryResponse createDiary(CreateDiaryRequest request, List<MultipartFile> images) {
+    public DiaryResponse createDiary(CreateDiaryRequest request, List<MultipartFile> images) throws IOException {
         AiDiaryRequest aiRequest = DiaryMapper.toAiDiaryRequest(request);
         log.debug("📤 AI 요청 DTO: {}", aiRequest);
 
@@ -51,10 +51,10 @@ public class DiaryService {
 
         Diary saved = diaryRepository.save(diary);
 
-        return new DiaryResponse(
-                saved.getId(),
-                null // image GPS 데이터 추출 로직 추가 이후 수정
-        );
+        // 이미지 메타데이터 추출
+        List<PinResponse> pins = metadataService.extractPins(images);
+
+        return new DiaryResponse(saved.getId(), pins);
     }
 
     public DiaryDetailDto getDiaryById(Long id) {

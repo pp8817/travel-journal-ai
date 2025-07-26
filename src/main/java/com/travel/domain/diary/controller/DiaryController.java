@@ -5,7 +5,9 @@ import com.travel.domain.diary.dto.response.DiaryDetailDto;
 import com.travel.domain.diary.dto.response.DiaryListDto;
 import com.travel.domain.diary.dto.response.DiaryResponse;
 import com.travel.domain.diary.service.DiaryService;
+import com.travel.domain.diary.service.PhotoMetadataService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/diary")
 public class DiaryController {
+
 
     private final DiaryService diaryService;
 
