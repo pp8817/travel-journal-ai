@@ -57,4 +57,6 @@ public class Diary extends BaseEntity{
     public void addAllImage(List<String> images) {
         this.images.addAll(images);
     }
+
+
 }

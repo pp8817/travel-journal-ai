@@ -11,13 +11,17 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/diary")
+@RequestMapping("/api/diary/photos")
 public class PhotoMetadataController {
 
     private final PhotoMetadataService photoMetadataService;
 
     @PostMapping("/pins")
     public ResponseEntity<List<PinResponse>> extractPins(@RequestPart("images") List<MultipartFile> images) {
+        if (images == null || images.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         try {
             List<PinResponse> pins = photoMetadataService.extractPins(images);
             return ResponseEntity.ok(pins);
