@@ -1,12 +1,15 @@
 package com.travel.domain.folder.controller;
 
 import com.travel.domain.folder.dto.FolderDetailResponse;
+import com.travel.domain.folder.dto.FolderListResponse;
 import com.travel.domain.folder.dto.FolderRequestDto;
 import com.travel.domain.folder.service.FolderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,4 +31,9 @@ public class FolderController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<List<FolderListResponse>> getFolderList() {
+        List<FolderListResponse> response = folderService.getFolderList();
+        return ResponseEntity.ok(response);
+    }
 }

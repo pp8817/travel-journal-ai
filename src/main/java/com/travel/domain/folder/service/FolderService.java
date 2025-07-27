@@ -1,6 +1,7 @@
 package com.travel.domain.folder.service;
 
 import com.travel.domain.folder.dto.FolderDetailResponse;
+import com.travel.domain.folder.dto.FolderListResponse;
 import com.travel.domain.folder.dto.FolderRequestDto;
 import com.travel.domain.folder.model.Folder;
 import com.travel.domain.folder.repository.FolderRepository;
@@ -51,5 +52,31 @@ public class FolderService {
 //                tags,
                 diarySummaries
         );
+    }
+
+    public List<FolderListResponse> getFolderList() {
+        List<Folder> folders = folderRepository.findAll();
+
+        return folders.stream()
+                .map(folder -> {
+                    String image = folder.getDiaries().stream()
+                            .filter(diary -> diary.getImagePaths() != null && !diary.getImagePaths().isEmpty())
+                            .map(diary -> diary.getImagePaths().get(0)) // 첫 번째 이미지
+                            .findFirst()
+                            .orElse(null); // 이미지가 없는 경우
+
+//                    List<String> tags = folder.getTags().stream()
+//                            .map(Tag::getName)
+//                            .toList();
+
+                    return new FolderListResponse(
+                            folder.getTitle(),
+                            folder.getStartDate(),
+                            folder.getEndDate(),
+                            image
+//                            tags
+                    );
+                })
+                .toList();
     }
 }
