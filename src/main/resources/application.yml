@@ -12,6 +12,11 @@ spring:
     resources:
       add-mappings: false
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
 server:
   port: 8080
   application:
@@ -20,3 +25,10 @@ server:
 ai:
   server:
     url: https://d6338de5e71e.ngrok-free.app
+
+file:
+  upload-dir: /Users/sangmin8817/Desktop/images
+
+logging:
+  level:
+    com.travel: DEBUG
