@@ -9,5 +9,5 @@ import java.util.List;
 public record AiDiaryRequest(
         @JsonProperty("date") String date,
         @JsonProperty("emotions") List<String> emotions,
-        @JsonProperty("image") List<String> images
+        @JsonProperty("image") String image
 ) {}

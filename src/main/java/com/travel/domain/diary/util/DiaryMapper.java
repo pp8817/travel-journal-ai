@@ -7,27 +7,28 @@ import com.travel.domain.diary.model.Diary;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class DiaryMapper {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
 
-    public static AiDiaryRequest toAiDiaryRequest(CreateDiaryRequest request) {
+    public static AiDiaryRequest toAiDiaryRequest(CreateDiaryRequest request, String base64Image) {
         return AiDiaryRequest.builder()
                 .date(formatDate(request.date()))
                 .emotions(request.emotions())
-                .images(request.images())
+                .image(base64Image)
                 .build();
     }
 
-    public static Diary toDiaryEntity(CreateDiaryRequest request, String content) {
+    public static Diary toDiaryEntity(CreateDiaryRequest request, String content, List<String> savedPaths) {
         Diary diary = Diary.builder()
                 .title("제목 없음") // 추후 개선
                 .content(content)
                 .travelDate(request.date())
                 .visibility(request.visibility())
                 .build();
-        diary.addAllImage(request.images());
+        diary.addAllImage(savedPaths);
         return diary;
     }
 

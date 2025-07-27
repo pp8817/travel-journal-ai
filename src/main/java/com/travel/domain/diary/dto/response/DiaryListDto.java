@@ -4,13 +4,14 @@ import com.travel.domain.diary.model.Diary;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 public class DiaryListDto {
 
     private Long id;              // 다이어리 식별자
     private String content;         // 제목
-    private String imgUrl;        // 대표 이미지
+    private List<String> imgUrl;        // 대표 이미지
     private LocalDate travelDate; // 여행 날짜
     private String location;      // 여행지
     private String weather;       // 날씨 (선택사항)
@@ -20,10 +21,9 @@ public class DiaryListDto {
         return DiaryListDto.builder()
                 .id(diary.getId())
                 .content(getFirstSentence(diary.getContent()))
-                .imgUrl(diary.getImageUrl())
+                .imgUrl(diary.getImagePaths())
                 .travelDate(diary.getTravelDate())
                 .location(diary.getLocation())
-                .weather(diary.getWeather()) // 필요 시 포함
                 .build();
     }
 
