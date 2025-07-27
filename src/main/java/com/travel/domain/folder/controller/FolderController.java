@@ -1,5 +1,6 @@
 package com.travel.domain.folder.controller;
 
+import com.travel.domain.folder.dto.FolderDetailResponse;
 import com.travel.domain.folder.dto.FolderRequestDto;
 import com.travel.domain.folder.service.FolderService;
 import lombok.RequiredArgsConstructor;
@@ -20,4 +21,11 @@ public class FolderController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @GetMapping("/{folderId}")
+    public ResponseEntity<FolderDetailResponse> getFolderDetail(@PathVariable Long folderId) {
+        FolderDetailResponse response = folderService.getFolderDetail(folderId);
+        return ResponseEntity.ok(response);
+    }
+
 }
