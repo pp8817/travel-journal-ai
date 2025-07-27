@@ -52,8 +52,8 @@ public class DiaryService {
             log.info(pinResponses.toString());
 
             // 2. AI 요청 생성 및 호출
-            String base64Image = imageUtil.encodeFirstImageToBase64(images);
-            AiDiaryRequest aiRequest = aiDiaryRequestFactory.create(request, base64Image);
+            List<String> imagesToBase64 = imageUtil.encodeImagesToBase64(images);
+            AiDiaryRequest aiRequest = aiDiaryRequestFactory.create(request, imagesToBase64);
             AiDiaryResponse aiResponse = aiClient.generate(aiRequest);
             log.debug("📥 AI 응답: {}", aiResponse.diary());
 

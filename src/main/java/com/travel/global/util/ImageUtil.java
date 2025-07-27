@@ -21,15 +21,18 @@ public class ImageUtil {
         return fileNames;
     }
 
-    public String encodeFirstImageToBase64(List<MultipartFile> images) {
-        if (images.isEmpty()) return null;
-        MultipartFile first = images.get(0);
-        try {
-            byte[] bytes = first.getBytes();
-            return "data:" + first.getContentType() + ";base64," + Base64.getEncoder().encodeToString(bytes);
-        } catch (IOException e) {
-            throw new RuntimeException("Base64 인코딩 실패", e);
+    public List<String> encodeImagesToBase64(List<MultipartFile> images) {
+        List<String> base64Images = new ArrayList<>();
+        for (MultipartFile image : images) {
+            try {
+                byte[] bytes = image.getBytes();
+                String encoded = "data:" + image.getContentType() + ";base64," + Base64.getEncoder().encodeToString(bytes);
+                base64Images.add(encoded);
+            } catch (IOException e) {
+                throw new RuntimeException("Base64 인코딩 실패", e);
+            }
         }
+        return base64Images;
     }
 
     public List<PinResponse> extractMetadata(List<MultipartFile> images) {

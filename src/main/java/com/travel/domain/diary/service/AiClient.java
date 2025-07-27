@@ -20,7 +20,7 @@ public class AiClient {
     public AiDiaryResponse generate(AiDiaryRequest request) {
         return webClient
                 .post()
-                .uri("/diary/generate")
+                .uri("/short_diary/generate")
                 .bodyValue(request)
                 .retrieve()
                 .onStatus(
