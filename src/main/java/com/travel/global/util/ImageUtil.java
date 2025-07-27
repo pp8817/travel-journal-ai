@@ -12,17 +12,13 @@ import java.util.List;
 @Service
 public class ImageUtil {
 
-    public List<String> saveImages(List<MultipartFile> images, String uploadDir) {
-        List<String> savedPaths = new ArrayList<>();
+    public static List<String> saveImages(List<MultipartFile> images, String uploadDir) {
+        List<String> fileNames = new ArrayList<>();
         for (MultipartFile image : images) {
-            try {
-                String path = FileUtil.saveImageToLocal(image, uploadDir);
-                savedPaths.add(path);
-            } catch (IOException e) {
-                throw new RuntimeException("이미지 저장 실패", e);
-            }
+            String filename = FileUtil.saveImageToLocal(image, uploadDir);
+            fileNames.add(filename);
         }
-        return savedPaths;
+        return fileNames;
     }
 
     public String encodeFirstImageToBase64(List<MultipartFile> images) {

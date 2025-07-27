@@ -30,7 +30,7 @@ public class DiaryService {
     private final EmotionService emotionService;
     private final AiClient aiClient;
     private final ImageUtil imageUtil;
-    private AiDiaryRequestFactory aiDiaryRequestFactory;
+    private final AiDiaryRequestFactory aiDiaryRequestFactory;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -43,25 +43,32 @@ public class DiaryService {
      */
     @Transactional
     public DiaryResponse createDiary(CreateDiaryRequest request, List<MultipartFile> images) {
-        // 1. 이미지 저장 및 메타데이터 추출
-        List<String> savedPaths = imageUtil.saveImages(images, uploadDir);
-        List<PinResponse> pinResponses = imageUtil.extractMetadata(images);
+        try {
+            // 핵심 로직
+            // 1. 이미지 저장 및 메타데이터 추출
+            List<String> savedPaths = imageUtil.saveImages(images, uploadDir);
+            List<PinResponse> pinResponses = imageUtil.extractMetadata(images);
 
-        // 2. AI 요청 생성 및 호출
-        String base64Image = imageUtil.encodeFirstImageToBase64(images);
-        AiDiaryRequest aiRequest = aiDiaryRequestFactory.create(request, base64Image);
-        log.debug("📤 AI 요청 DTO: {}", aiRequest);
-        AiDiaryResponse aiResponse = aiClient.generate(aiRequest);
-        log.debug("📥 AI 응답: {}", aiResponse.diary());
+            log.info(pinResponses.toString());
 
-        // 3. 일기 저장
-        Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse.diary(), savedPaths);
-        List<Emotion> emotions = emotionService.findOrCreateAll(request.emotions());
-        emotions.forEach(diary::addEmotion);
-        Diary saved = diaryRepository.save(diary);
+            // 2. AI 요청 생성 및 호출
+            String base64Image = imageUtil.encodeFirstImageToBase64(images);
+            AiDiaryRequest aiRequest = aiDiaryRequestFactory.create(request, base64Image);
+            AiDiaryResponse aiResponse = aiClient.generate(aiRequest);
+            log.debug("📥 AI 응답: {}", aiResponse.diary());
 
-        // 4. 응답 반환
-        return new DiaryResponse(saved.getId(), pinResponses);
+            // 3. 일기 저장
+            Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse.diary(), savedPaths);
+            List<Emotion> emotions = emotionService.findOrCreateAll(request.emotions());
+            emotions.forEach(diary::addEmotion);
+            Diary saved = diaryRepository.save(diary);
+
+            // 4. 응답 반환
+            return new DiaryResponse(saved.getId(), pinResponses);
+        } catch (Exception e) {
+            log.error("❌ 일기 생성 중 예외 발생", e);
+            throw e; // 또는 커스텀 예외
+        }
     }
 
     public DiaryDetailDto getDiaryById(Long id) {
