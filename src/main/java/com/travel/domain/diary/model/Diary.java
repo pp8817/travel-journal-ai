@@ -1,5 +1,6 @@
 package com.travel.domain.diary.model;
 
+import com.travel.domain.folder.model.Folder;
 import com.travel.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,9 +42,16 @@ public class Diary extends BaseEntity{
     @Column(name = "image_paths", nullable = false)
     private List<String> imagePaths = new ArrayList<>();
 
+    @Column(name = "hashtags", nullable = false)
+    private List<String> hashtags = new ArrayList<>();
+
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<DiaryEmotion> diaryEmotions = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id") // FK 컬럼 이름
+    private Folder folder;
 
     /* Using Method */
     public void addEmotion(Emotion emotion) {
@@ -56,5 +64,9 @@ public class Diary extends BaseEntity{
 
     public void addAllImage(List<String> imagePaths) {
         this.imagePaths.addAll(imagePaths);
+    }
+
+    public void addAllTags(List<String> hashtags) {
+        this.hashtags.addAll(hashtags);
     }
 }

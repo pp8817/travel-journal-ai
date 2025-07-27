@@ -24,10 +24,10 @@ public class DiaryController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DiaryResponse> createDiary(
-            @RequestPart("data") CreateDiaryRequest request,
+            @RequestPart("data") CreateDiaryRequest data,
             @RequestPart("images") List<MultipartFile> images
     ) {
-        DiaryResponse response = diaryService.createDiary(request, images);
+        DiaryResponse response = diaryService.createDiary(data, images);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
