@@ -41,6 +41,9 @@ public class Diary extends BaseEntity{
     @Column(name = "image_paths", nullable = false)
     private List<String> imagePaths = new ArrayList<>();
 
+    @Column(name = "hashtags", nullable = false)
+    private List<String> hashtags = new ArrayList<>();
+
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<DiaryEmotion> diaryEmotions = new ArrayList<>();
@@ -56,5 +59,9 @@ public class Diary extends BaseEntity{
 
     public void addAllImage(List<String> imagePaths) {
         this.imagePaths.addAll(imagePaths);
+    }
+
+    public void addAllTags(List<String> hashtags) {
+        this.hashtags.addAll(hashtags);
     }
 }

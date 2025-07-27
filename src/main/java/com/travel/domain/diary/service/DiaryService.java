@@ -44,30 +44,31 @@ public class DiaryService {
     @Transactional
     public DiaryResponse createDiary(CreateDiaryRequest request, List<MultipartFile> images) {
         try {
-            // 핵심 로직
             // 1. 이미지 저장 및 메타데이터 추출
             List<String> savedPaths = imageUtil.saveImages(images, uploadDir);
             List<PinResponse> pinResponses = imageUtil.extractMetadata(images);
 
-            log.info(pinResponses.toString());
-
             // 2. AI 요청 생성 및 호출
             List<String> imagesToBase64 = imageUtil.encodeImagesToBase64(images);
             AiDiaryRequest aiRequest = aiDiaryRequestFactory.create(request, imagesToBase64);
-            AiDiaryResponse aiResponse = aiClient.generate(aiRequest);
-            log.debug("📥 AI 응답: {}", aiResponse.diary());
+
+            AiDiaryResponse aiResponse = aiClient.generate(aiRequest); // 일기 본문
+            HashtagResponse hashtagResponse = aiClient.generateHashtags(aiRequest); // 해시태그
+            log.debug("📥 AI 일기: {}", aiResponse.diary());
+            log.debug("🏷️ AI 해시태그: {}", hashtagResponse.hashtags());
 
             // 3. 일기 저장
-            Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse.diary(), savedPaths);
+            Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse.diary(), savedPaths, hashtagResponse.hashtags());
             List<Emotion> emotions = emotionService.findOrCreateAll(request.emotions());
             emotions.forEach(diary::addEmotion);
             Diary saved = diaryRepository.save(diary);
 
             // 4. 응답 반환
             return new DiaryResponse(saved.getId(), pinResponses);
+
         } catch (Exception e) {
             log.error("❌ 일기 생성 중 예외 발생", e);
-            throw e; // 또는 커스텀 예외
+            throw e;
         }
     }
 

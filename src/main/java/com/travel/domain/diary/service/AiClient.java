@@ -2,6 +2,7 @@ package com.travel.domain.diary.service;
 
 import com.travel.domain.diary.dto.request.AiDiaryRequest;
 import com.travel.domain.diary.dto.response.AiDiaryResponse;
+import com.travel.domain.diary.dto.response.HashtagResponse;
 import com.travel.global.exception.CustomException;
 import com.travel.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,25 @@ public class AiClient {
                         })
                 )
                 .bodyToMono(AiDiaryResponse.class)
+                .blockOptional()
+                .orElseThrow(() -> new CustomException(ErrorCode.AI_RESPONSE_NULL));
+    }
+
+    public HashtagResponse generateHashtags(AiDiaryRequest request) {
+        return webClient
+                .post()
+                .uri("/hashtag/generate")
+                .bodyValue(request)
+                .retrieve()
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(),
+                        response -> response.bodyToMono(String.class).flatMap(body -> {
+                            log.error("❌ 해시태그 생성 실패 - 상태 코드: {}, 응답 바디: {}",
+                                    response.statusCode().value(), body);
+                            return Mono.error(new CustomException(ErrorCode.AI_REQUEST_FAILED));
+                        })
+                )
+                .bodyToMono(HashtagResponse.class)
                 .blockOptional()
                 .orElseThrow(() -> new CustomException(ErrorCode.AI_RESPONSE_NULL));
     }

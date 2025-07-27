@@ -1,6 +1,5 @@
 package com.travel.domain.diary.util;
 
-import com.travel.domain.diary.dto.request.AiDiaryRequest;
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
 import com.travel.domain.diary.dto.response.DiaryDetailDto;
 import com.travel.domain.diary.model.Diary;
@@ -13,15 +12,7 @@ public class DiaryMapper {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
 
-    public static AiDiaryRequest toAiDiaryRequest(CreateDiaryRequest request, String base64Image) {
-        return AiDiaryRequest.builder()
-                .date(formatDate(request.date()))
-                .emotions(request.emotions())
-                .image(base64Image)
-                .build();
-    }
-
-    public static Diary toDiaryEntity(CreateDiaryRequest request, String content, List<String> savedPaths) {
+    public static Diary toDiaryEntity(CreateDiaryRequest request, String content, List<String> savedPaths, List<String> hashtags) {
         Diary diary = Diary.builder()
                 .title("제목 없음") // 추후 개선
                 .content(content)
@@ -29,6 +20,7 @@ public class DiaryMapper {
                 .visibility(request.visibility())
                 .build();
         diary.addAllImage(savedPaths);
+        diary.addAllTags(hashtags);
         return diary;
     }
 
