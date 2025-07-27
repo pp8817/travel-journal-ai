@@ -1,5 +1,6 @@
 package com.travel.domain.folder.service;
 
+import com.travel.domain.diary.model.Diary;
 import com.travel.domain.folder.dto.FolderDetailResponse;
 import com.travel.domain.folder.dto.FolderListResponse;
 import com.travel.domain.folder.dto.FolderRequestDto;
@@ -32,16 +33,13 @@ public class FolderService {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 폴더를 찾을 수 없습니다."));
 
-//        List<String> tags = folder.getTags().stream()
-//                .map(Tag::getName)
-//                .toList();
-
         List<FolderDetailResponse.DiarySummary> diarySummaries = folder.getDiaries().stream()
                 .map(diary -> new FolderDetailResponse.DiarySummary(
                         diary.getId(),
                         diary.getTitle(),
                         diary.getTravelDate(),
-                        diary.getImagePaths().get(0)
+                        diary.getImagePaths().get(0),
+                        diary.getHashtags()
                 ))
                 .toList();
 
@@ -49,7 +47,6 @@ public class FolderService {
                 folder.getTitle(),
                 folder.getStartDate(),
                 folder.getEndDate(),
-//                tags,
                 diarySummaries
         );
     }
@@ -59,22 +56,26 @@ public class FolderService {
 
         return folders.stream()
                 .map(folder -> {
-                    String image = folder.getDiaries().stream()
+                    // 첫 번째 일기 (있다면)
+                    Diary firstDiary = folder.getDiaries().stream()
                             .filter(diary -> diary.getImagePaths() != null && !diary.getImagePaths().isEmpty())
-                            .map(diary -> diary.getImagePaths().get(0)) // 첫 번째 이미지
                             .findFirst()
-                            .orElse(null); // 이미지가 없는 경우
+                            .orElse(null);
 
-//                    List<String> tags = folder.getTags().stream()
-//                            .map(Tag::getName)
-//                            .toList();
+                    String image = (firstDiary != null && !firstDiary.getImagePaths().isEmpty())
+                            ? firstDiary.getImagePaths().get(0)
+                            : null;
+
+                    List<String> tags = (firstDiary != null && firstDiary.getHashtags() != null)
+                            ? firstDiary.getHashtags()
+                            : List.of();
 
                     return new FolderListResponse(
                             folder.getTitle(),
                             folder.getStartDate(),
                             folder.getEndDate(),
-                            image
-//                            tags
+                            image,
+                            tags
                     );
                 })
                 .toList();

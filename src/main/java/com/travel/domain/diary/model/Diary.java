@@ -1,5 +1,6 @@
 package com.travel.domain.diary.model;
 
+import com.travel.domain.folder.model.Folder;
 import com.travel.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,6 +48,10 @@ public class Diary extends BaseEntity{
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<DiaryEmotion> diaryEmotions = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id") // FK 컬럼 이름
+    private Folder folder;
 
     /* Using Method */
     public void addEmotion(Emotion emotion) {
