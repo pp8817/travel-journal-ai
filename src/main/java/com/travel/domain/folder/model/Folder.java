@@ -1,10 +1,13 @@
 package com.travel.domain.folder.model;
 
+import com.travel.domain.diary.model.Diary;
 import com.travel.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,6 +33,9 @@ public class Folder extends BaseEntity {
 
     @Column(nullable = false)
     private String country;
+
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Diary> diaries = new ArrayList<>();
 
 //    @Column(name = "image_url")
 //    private String imageUrl;

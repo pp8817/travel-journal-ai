@@ -3,14 +3,10 @@ package com.travel.domain.diary.util;
 import com.travel.domain.diary.dto.request.AiDiaryRequest;
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
 import com.travel.domain.diary.dto.response.DiaryDetailDto;
-import com.travel.domain.diary.dto.response.DiaryResponse;
-import com.travel.domain.diary.dto.response.PinResponse;
 import com.travel.domain.diary.model.Diary;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
 
 public class DiaryMapper {
 
@@ -33,9 +29,6 @@ public class DiaryMapper {
                 .build();
         diary.addAllImage(request.images());
         return diary;
-    }
-    public static DiaryResponse toDiaryResponse(Diary diary, List<PinResponse> pins) {
-        return new DiaryResponse(diary.getId(), pins);
     }
 
     private static String formatDate(LocalDate date) {
