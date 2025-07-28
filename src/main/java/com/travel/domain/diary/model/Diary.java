@@ -32,9 +32,6 @@ public class Diary extends BaseEntity{
     @Column(name = "travel_date", nullable = false)
     private LocalDate travelDate; // 현재 일기가 몇 일차인지
 
-    @Column(name = "location", nullable = false)
-    private String location;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", nullable = false)
     private Visibility visibility = Visibility.PRIVATE; // 기본값: private으로 설정, 논의 후 수정 필요
