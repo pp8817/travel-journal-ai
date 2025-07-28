@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record CreateDiaryRequest(
+        Long folderId,
         LocalDate date,
         List<String> emotions,
         Visibility visibility

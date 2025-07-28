@@ -31,11 +31,12 @@ public class Folder extends BaseEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Column(nullable = false)
-    private String country;
-
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Diary> diaries = new ArrayList<>();
+
+    public void addDiary(Diary diary) {
+        this.diaries.add(diary);
+    }
 
 //    @Column(name = "image_url")
 //    private String imageUrl;

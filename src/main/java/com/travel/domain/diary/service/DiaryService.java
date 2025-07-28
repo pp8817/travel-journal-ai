@@ -8,6 +8,8 @@ import com.travel.domain.diary.model.Emotion;
 import com.travel.domain.diary.model.Visibility;
 import com.travel.domain.diary.repository.DiaryRepository;
 import com.travel.domain.diary.util.DiaryMapper;
+import com.travel.domain.folder.model.Folder;
+import com.travel.domain.folder.repository.FolderRepository;
 import com.travel.global.util.AiDiaryRequestFactory;
 import com.travel.global.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class DiaryService {
 
     private final DiaryRepository diaryRepository;
+    private final FolderRepository folderRepository;
     private final EmotionService emotionService;
     private final AiClient aiClient;
     private final ImageUtil imageUtil;
@@ -62,6 +65,12 @@ public class DiaryService {
             List<Emotion> emotions = emotionService.findOrCreateAll(request.emotions());
             emotions.forEach(diary::addEmotion);
             Diary saved = diaryRepository.save(diary);
+
+            Folder folder = folderRepository.findById(request.folderId())
+                    .orElseThrow(() -> new RuntimeException("해당 폴더를 찾을 수 없습니다."));
+
+            folder.addDiary(diary);
+            diary.setFolder(folder);
 
             // 4. 응답 반환
             return new DiaryResponse(saved.getId(), pinResponses);

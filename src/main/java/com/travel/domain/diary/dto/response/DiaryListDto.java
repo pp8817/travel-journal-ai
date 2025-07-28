@@ -2,10 +2,12 @@ package com.travel.domain.diary.dto.response;
 
 import com.travel.domain.diary.model.Diary;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Getter
 @Builder
 public class DiaryListDto {
 
