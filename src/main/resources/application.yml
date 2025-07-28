@@ -24,10 +24,10 @@ server:
 
 ai:
   server:
-    url: https://f419279aad4a.ngrok-free.app
+    url: https://6d016b35628b.ngrok-free.app
 
 file:
-  upload-dir: /Users/sangmin8817/Desktop/images
+  upload-dir: /tmp/images/
 
 logging:
   level:
