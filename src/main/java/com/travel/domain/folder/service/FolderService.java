@@ -71,6 +71,7 @@ public class FolderService {
                             : List.of();
 
                     return new FolderListResponse(
+                            folder.getId(),
                             folder.getTitle(),
                             folder.getStartDate(),
                             folder.getEndDate(),
