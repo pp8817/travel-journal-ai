@@ -1,5 +1,7 @@
 package com.travel.domain.diary.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
 import com.travel.domain.diary.dto.response.DiaryDetailDto;
 import com.travel.domain.diary.dto.response.DiaryListDto;
@@ -21,13 +23,15 @@ import java.util.List;
 public class DiaryController {
 
     private final DiaryService diaryService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DiaryResponse> createDiary(
-            @RequestPart("data") CreateDiaryRequest data,
+            @RequestPart("data") String data,
             @RequestPart("images") List<MultipartFile> images
-    ) {
-        DiaryResponse response = diaryService.createDiary(data, images);
+    ) throws JsonProcessingException {
+        CreateDiaryRequest request = objectMapper.readValue(data, CreateDiaryRequest.class);
+        DiaryResponse response = diaryService.createDiary(request, images);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

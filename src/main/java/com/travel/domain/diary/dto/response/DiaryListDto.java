@@ -2,28 +2,29 @@ package com.travel.domain.diary.dto.response;
 
 import com.travel.domain.diary.model.Diary;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Getter
 @Builder
 public class DiaryListDto {
 
-    private Long id;              // 다이어리 식별자
-    private String content;         // 제목
-    private List<String> imgUrl;        // 대표 이미지
-    private LocalDate travelDate; // 여행 날짜
-    private String location;      // 여행지
-    private String weather;       // 날씨 (선택사항)
+    private Long id;
+    private String content;
+    private List<String> imageUrl;
+    private List<String> hashtags;
+    private LocalDate travelDate;
 
     public static DiaryListDto from(Diary diary) {
 
         return DiaryListDto.builder()
                 .id(diary.getId())
                 .content(getFirstSentence(diary.getContent()))
-                .imgUrl(diary.getImagePaths())
+                .imageUrl(diary.getImagePaths())
+                .hashtags(diary.getHashtags())
                 .travelDate(diary.getTravelDate())
-                .location(diary.getLocation())
                 .build();
     }
 
