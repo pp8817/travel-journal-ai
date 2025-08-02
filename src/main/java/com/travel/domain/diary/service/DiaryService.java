@@ -61,7 +61,7 @@ public class DiaryService {
             log.debug("🏷️ AI 해시태그: {}", hashtagResponse.hashtags());
 
             // 3. 일기 저장
-            Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse.diary(), savedPaths, hashtagResponse.hashtags());
+            Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse, savedPaths, hashtagResponse.hashtags());
             List<Emotion> emotions = emotionService.findOrCreateAll(request.emotions());
             emotions.forEach(diary::addEmotion);
             Diary saved = diaryRepository.save(diary);

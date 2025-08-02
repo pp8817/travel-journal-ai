@@ -1,6 +1,7 @@
 package com.travel.domain.diary.util;
 
 import com.travel.domain.diary.dto.request.CreateDiaryRequest;
+import com.travel.domain.diary.dto.response.AiDiaryResponse;
 import com.travel.domain.diary.dto.response.DiaryDetailDto;
 import com.travel.domain.diary.model.Diary;
 
@@ -12,10 +13,10 @@ public class DiaryMapper {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
 
-    public static Diary toDiaryEntity(CreateDiaryRequest request, String content, List<String> savedPaths, List<String> hashtags) {
+    public static Diary toDiaryEntity(CreateDiaryRequest request, AiDiaryResponse aiDiaryResponse, List<String> savedPaths, List<String> hashtags) {
         Diary diary = Diary.builder()
-                .title("제목 없음") // 추후 개선
-                .content(content)
+                .title(aiDiaryResponse.title()) // 추후 개선
+                .content(aiDiaryResponse.diary())
                 .travelDate(request.date())
                 .visibility(request.visibility())
                 .build();
