@@ -11,6 +11,7 @@ import com.travel.domain.diary.util.DiaryMapper;
 import com.travel.domain.folder.model.Folder;
 import com.travel.domain.folder.repository.FolderRepository;
 import com.travel.global.util.AiDiaryRequestFactory;
+import com.travel.global.util.GeocodingUtil;
 import com.travel.global.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,7 @@ public class DiaryService {
     private final EmotionService emotionService;
     private final AiClient aiClient;
     private final ImageUtil imageUtil;
+    private final GeocodingUtil geocodingUtil;
     private final AiDiaryRequestFactory aiDiaryRequestFactory;
 
     @Value("${file.upload-dir}")
@@ -49,7 +52,21 @@ public class DiaryService {
         try {
             // 1. 이미지 저장 및 메타데이터 추출
             List<String> savedPaths = imageUtil.saveImages(images, uploadDir);
-            List<PinResponse> pinResponses = imageUtil.extractMetadata(images);
+            List<PinResponse> rawPins = imageUtil.extractMetadata(images);
+
+            List<PinResponse> enrichedPins = rawPins.stream()
+                    .sorted(Comparator.comparing(PinResponse::timestamp))
+                    .map(pin -> {
+                        String location = geocodingUtil.getLocation(pin.latitude(), pin.longitude());
+                        return new PinResponse(
+                                pin.latitude(),
+                                pin.longitude(),
+                                pin.timestamp(),
+                                pin.fileName(),
+                                location
+                        );
+                    })
+                    .collect(Collectors.toList());
 
             // 2. AI 요청 생성 및 호출
             List<String> imagesToBase64 = imageUtil.encodeImagesToBase64(images);
@@ -73,7 +90,7 @@ public class DiaryService {
             diary.setFolder(folder);
 
             // 4. 응답 반환
-            return new DiaryResponse(saved.getId(), pinResponses);
+            return new DiaryResponse(saved.getId(), enrichedPins);
 
         } catch (Exception e) {
             log.error("❌ 일기 생성 중 예외 발생", e);
