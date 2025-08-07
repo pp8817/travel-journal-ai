@@ -26,6 +26,9 @@ ai:
   server:
     url: https://ce19795ee13d.ngrok-free.app
 
+google:
+  maps:
+    api-key: ${MAPS_API}
 
 file:
   upload-dir: /Users/sangmin8817/Desktop/images
