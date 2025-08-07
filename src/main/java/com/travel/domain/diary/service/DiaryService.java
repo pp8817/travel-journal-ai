@@ -10,6 +10,7 @@ import com.travel.domain.diary.repository.DiaryRepository;
 import com.travel.domain.diary.util.DiaryMapper;
 import com.travel.domain.folder.model.Folder;
 import com.travel.domain.folder.repository.FolderRepository;
+import com.travel.domain.image.dto.ImageMetaData;
 import com.travel.global.util.AiDiaryRequestFactory;
 import com.travel.global.util.GeocodingUtil;
 import com.travel.global.util.ImageUtil;
@@ -41,28 +42,22 @@ public class DiaryService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    /**
-     * 추가 필요 작업
-     * - 여러 장의 이미지를 입력 받은 경우 첫 장만 AI 서버로 전송
-     * - 각 image의 위치 정보와 시간 정보 추출 로직
-     * - 입력 받은 MutipartFile 형식의 이미지를 임의 경로에 저장한 후 imagePath 생성 후 Diary 엔티티에 저장
-     */
     @Transactional
     public DiaryResponse createDiary(CreateDiaryRequest request, List<MultipartFile> images) {
         try {
             // 1. 이미지 저장 및 메타데이터 추출
             List<String> savedPaths = imageUtil.saveImages(images, uploadDir);
-            List<PinResponse> rawPins = imageUtil.extractMetadata(images);
+            List<ImageMetaData> rawPins = imageUtil.extractMetadata(images);
 
             List<PinResponse> enrichedPins = rawPins.stream()
-                    .sorted(Comparator.comparing(PinResponse::timestamp))
-                    .map(pin -> {
-                        String location = geocodingUtil.getLocation(pin.latitude(), pin.longitude());
+                    .sorted(Comparator.comparing(ImageMetaData::timestamp))
+                    .map(meta -> {
+                        String location = geocodingUtil.getLocation(meta.latitude(), meta.longitude());
                         return new PinResponse(
-                                pin.latitude(),
-                                pin.longitude(),
-                                pin.timestamp(),
-                                pin.fileName(),
+                                meta.latitude(),
+                                meta.longitude(),
+                                meta.timestamp(),
+                                meta.fileName(),
                                 location
                         );
                     })
