@@ -9,6 +9,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Component
 public class GeocodingUtil {
@@ -18,13 +20,16 @@ public class GeocodingUtil {
 
     public String getLocation(double lat, double lon) {
         try {
-            String url = String.format(
-                    "https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&key=%s",
+            String urlStr = String.format(
+                    "https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&key=%s&language=ko",
                     lat, lon, apiKey
             );
 
-            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            URL url = new URL(urlStr);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
+            conn.setConnectTimeout(3000);
+            conn.setReadTimeout(3000);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             StringBuilder response = new StringBuilder();
@@ -35,14 +40,20 @@ public class GeocodingUtil {
             in.close();
 
             JSONObject json = new JSONObject(response.toString());
+
+            // ✅ API 상태 확인
+            if (!json.getString("status").equals("OK")) {
+                return "Unknown Location";
+            }
+
             JSONArray results = json.getJSONArray("results");
             if (results.length() == 0) return "Unknown Location";
 
-            JSONObject address = results.getJSONObject(0);
-            JSONArray components = address.getJSONArray("address_components");
+            JSONObject firstResult = results.getJSONObject(0);
+            JSONArray components = firstResult.getJSONArray("address_components");
 
-            String city = "";
-            String country = "";
+            // ⬇️ 우선순위대로 담을 Map (중복 제거용)
+            Map<String, String> locationMap = new LinkedHashMap<>();
 
             for (int i = 0; i < components.length(); i++) {
                 JSONObject comp = components.getJSONObject(i);
@@ -50,20 +61,39 @@ public class GeocodingUtil {
 
                 for (int j = 0; j < types.length(); j++) {
                     String type = types.getString(j);
+                    String name = comp.getString("long_name");
 
-                    // 도시 추출 우선순위: locality > sublocality > administrative_area_level_1
-                    if ((type.equals("locality") || type.equals("sublocality") || type.equals("administrative_area_level_1"))
-                            && city.isEmpty()) {
-                        city = comp.getString("long_name");
-                    }
-
-                    if (type.equals("country")) {
-                        country = comp.getString("long_name");
+                    switch (type) {
+                        case "sublocality":
+                        case "locality":
+                        case "administrative_area_level_2":
+                        case "administrative_area_level_1":
+                        case "country":
+                            locationMap.putIfAbsent(type, name);
+                            break;
                     }
                 }
             }
 
-            return (city.isEmpty() ? "" : city + ", ") + (country.isEmpty() ? "Unknown Country" : country);
+            // ⬇️ 우선순위대로 구성
+            String[] priority = {
+                    "sublocality",
+                    "locality",
+                    "administrative_area_level_2",
+                    "administrative_area_level_1",
+                    "country"
+            };
+
+            StringBuilder fullAddress = new StringBuilder();
+            for (String key : priority) {
+                String val = locationMap.get(key);
+                if (val != null && fullAddress.indexOf(val) == -1) {
+                    if (fullAddress.length() > 0) fullAddress.append(", ");
+                    fullAddress.append(val);
+                }
+            }
+
+            return fullAddress.toString().isEmpty() ? "Unknown Location" : fullAddress.toString();
 
         } catch (Exception e) {
             e.printStackTrace();
