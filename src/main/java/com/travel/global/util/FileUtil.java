@@ -1,8 +1,10 @@
 package com.travel.global.util;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,6 +13,14 @@ import java.util.UUID;
 
 @Slf4j
 public class FileUtil {
+
+    @PostConstruct
+    public void init() {
+        File imageDir = new File("/tmp/images");
+        if (!imageDir.exists()) {
+            imageDir.mkdirs(); // 여기서 폴더 생성
+        }
+    }
 
     public static String saveImageToLocal(MultipartFile image, String uploadDir) {
         try {

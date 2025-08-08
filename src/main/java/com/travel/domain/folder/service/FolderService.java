@@ -37,6 +37,7 @@ public class FolderService {
                 .map(diary -> new FolderDetailResponse.DiarySummary(
                         diary.getId(),
                         diary.getTitle(),
+                        diary.getContent(),
                         diary.getTravelDate(),
                         diary.getImagePaths().get(0),
                         diary.getHashtags()
@@ -71,6 +72,7 @@ public class FolderService {
                             : List.of();
 
                     return new FolderListResponse(
+                            folder.getId(),
                             folder.getTitle(),
                             folder.getStartDate(),
                             folder.getEndDate(),

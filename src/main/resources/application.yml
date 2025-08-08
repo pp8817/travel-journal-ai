@@ -24,7 +24,8 @@ server:
 
 ai:
   server:
-    url: https://f419279aad4a.ngrok-free.app
+    url: https://ce19795ee13d.ngrok-free.app
+
 
 file:
   upload-dir: /Users/sangmin8817/Desktop/images
