@@ -11,8 +11,9 @@ import com.travel.domain.diary.util.DiaryMapper;
 import com.travel.domain.folder.model.Folder;
 import com.travel.domain.folder.repository.FolderRepository;
 import com.travel.domain.image.dto.ImageMetaData;
+import com.travel.domain.image.dto.PlaceInfo;
 import com.travel.global.util.AiDiaryRequestFactory;
-import com.travel.global.util.GeocodingUtil;
+import com.travel.global.util.GooglePlacesUtil;
 import com.travel.global.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +37,8 @@ public class DiaryService {
     private final EmotionService emotionService;
     private final AiClient aiClient;
     private final ImageUtil imageUtil;
-    private final GeocodingUtil geocodingUtil;
     private final AiDiaryRequestFactory aiDiaryRequestFactory;
+    private final GooglePlacesUtil googlePlacesUtil;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -52,13 +53,14 @@ public class DiaryService {
             List<PinResponse> enrichedPins = rawPins.stream()
                     .sorted(Comparator.comparing(ImageMetaData::timestamp))
                     .map(meta -> {
-                        String location = geocodingUtil.getLocation(meta.latitude(), meta.longitude());
+                        PlaceInfo placeInfo = googlePlacesUtil.getExactPlaceInfo(meta.latitude(), meta.longitude());
                         return new PinResponse(
                                 meta.latitude(),
                                 meta.longitude(),
                                 meta.timestamp(),
                                 meta.fileName(),
-                                location
+                                placeInfo.name(),
+                                placeInfo.vicinity()
                         );
                     })
                     .collect(Collectors.toList());
