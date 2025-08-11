@@ -71,7 +71,7 @@ public class DiaryService {
             Diary savedDiary = diaryRepository.save(diary);
 
             // 3. 이미지 엔티티 생성 및 저장
-            List<PinResponse> enrichedPins = rawPins.stream()
+            rawPins.stream()
                     .sorted(Comparator.comparing(ImageMetaData::timestamp))
                     .map(meta -> {
                         PlaceInfo placeInfo = googlePlacesUtil.getExactPlaceInfo(meta.latitude(), meta.longitude());
@@ -102,7 +102,7 @@ public class DiaryService {
                     .collect(Collectors.toList());
 
             // 4. 응답 반환
-            return new DiaryResponse(savedDiary.getId(), enrichedPins);
+            return new DiaryResponse(savedDiary.getId());
 
         } catch (Exception e) {
             log.error("❌ 일기 생성 중 예외 발생", e);
