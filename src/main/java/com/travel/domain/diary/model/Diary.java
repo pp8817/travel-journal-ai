@@ -1,6 +1,7 @@
 package com.travel.domain.diary.model;
 
 import com.travel.domain.folder.model.Folder;
+import com.travel.domain.image.model.Image;
 import com.travel.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,11 +36,9 @@ public class Diary extends BaseEntity{
     @Column(name = "visibility", nullable = false)
     private Visibility visibility = Visibility.PRIVATE; // 기본값: private으로 설정, 논의 후 수정 필요
 
-    @ElementCollection
-    @CollectionTable(name = "diary_images", joinColumns = @JoinColumn(name = "diary_id"))
-    @Column(name = "image_path")
-    @Builder.Default
-    private List<String> imagePaths = new ArrayList<>();
+
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "diary_hashtags", joinColumns = @JoinColumn(name = "diary_id"))
@@ -64,8 +63,9 @@ public class Diary extends BaseEntity{
         this.diaryEmotions.add(link);
     }
 
-    public void addAllImage(List<String> imagePaths) {
-        this.imagePaths.addAll(imagePaths);
+    public void addImage(Image image) {
+        images.add(image);
+        image.setDiary(this);
     }
 
     public void addAllTags(List<String> hashtags) {

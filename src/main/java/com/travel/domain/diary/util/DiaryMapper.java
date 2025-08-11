@@ -20,7 +20,6 @@ public class DiaryMapper {
                 .travelDate(request.date())
                 .visibility(request.visibility())
                 .build();
-        diary.addAllImage(savedPaths);
         diary.addAllTags(hashtags);
         return diary;
     }
