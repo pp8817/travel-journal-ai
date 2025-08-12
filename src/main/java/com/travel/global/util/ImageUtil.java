@@ -1,6 +1,6 @@
 package com.travel.global.util;
 
-import com.travel.domain.diary.dto.response.PinResponse;
+import com.travel.domain.image.dto.ImageMetaData;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,9 +35,9 @@ public class ImageUtil {
         return base64Images;
     }
 
-    public List<PinResponse> extractMetadata(List<MultipartFile> images) {
+    public List<ImageMetaData> extractMetadata(List<MultipartFile> images) {
         return ExifUtil.extractImageMetadata(images).stream()
-                .map(meta -> new PinResponse(meta.latitude(), meta.longitude(), meta.timestamp(), meta.fileName()))
+                .map(meta -> new ImageMetaData(meta.latitude(), meta.longitude(), meta.timestamp(), meta.fileName()))
                 .toList();
     }
 }

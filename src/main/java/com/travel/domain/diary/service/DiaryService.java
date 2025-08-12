@@ -10,7 +10,12 @@ import com.travel.domain.diary.repository.DiaryRepository;
 import com.travel.domain.diary.util.DiaryMapper;
 import com.travel.domain.folder.model.Folder;
 import com.travel.domain.folder.repository.FolderRepository;
+import com.travel.domain.image.dto.ImageMetaData;
+import com.travel.domain.image.dto.PlaceInfo;
+import com.travel.domain.image.model.Image;
+import com.travel.domain.image.repository.ImageRepository;
 import com.travel.global.util.AiDiaryRequestFactory;
+import com.travel.global.util.GooglePlacesUtil;
 import com.travel.global.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,55 +36,86 @@ public class DiaryService {
 
     private final DiaryRepository diaryRepository;
     private final FolderRepository folderRepository;
+    private final ImageRepository imageRepository;
     private final EmotionService emotionService;
     private final AiClient aiClient;
     private final ImageUtil imageUtil;
     private final AiDiaryRequestFactory aiDiaryRequestFactory;
+    private final GooglePlacesUtil googlePlacesUtil;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    /**
-     * 추가 필요 작업
-     * - 여러 장의 이미지를 입력 받은 경우 첫 장만 AI 서버로 전송
-     * - 각 image의 위치 정보와 시간 정보 추출 로직
-     * - 입력 받은 MutipartFile 형식의 이미지를 임의 경로에 저장한 후 imagePath 생성 후 Diary 엔티티에 저장
-     */
     @Transactional
     public DiaryResponse createDiary(CreateDiaryRequest request, List<MultipartFile> images) {
         try {
             // 1. 이미지 저장 및 메타데이터 추출
             List<String> savedPaths = imageUtil.saveImages(images, uploadDir);
-            List<PinResponse> pinResponses = imageUtil.extractMetadata(images);
+            List<ImageMetaData> rawPins = imageUtil.extractMetadata(images);
 
-            // 2. AI 요청 생성 및 호출
+            // 2. Diary 엔티티 생성
             List<String> imagesToBase64 = imageUtil.encodeImagesToBase64(images);
             AiDiaryRequest aiRequest = aiDiaryRequestFactory.create(request, imagesToBase64);
+            AiDiaryResponse aiResponse = aiClient.generate(aiRequest);
+            HashtagResponse hashtagResponse = aiClient.generateHashtags(aiRequest);
 
-            AiDiaryResponse aiResponse = aiClient.generate(aiRequest); // 일기 본문
-            HashtagResponse hashtagResponse = aiClient.generateHashtags(aiRequest); // 해시태그
-            log.debug("📥 AI 일기: {}", aiResponse.diary());
-            log.debug("🏷️ AI 해시태그: {}", hashtagResponse.hashtags());
-
-            // 3. 일기 저장
             Diary diary = DiaryMapper.toDiaryEntity(request, aiResponse, savedPaths, hashtagResponse.hashtags());
             List<Emotion> emotions = emotionService.findOrCreateAll(request.emotions());
             emotions.forEach(diary::addEmotion);
-            Diary saved = diaryRepository.save(diary);
 
             Folder folder = folderRepository.findById(request.folderId())
                     .orElseThrow(() -> new RuntimeException("해당 폴더를 찾을 수 없습니다."));
-
             folder.addDiary(diary);
             diary.setFolder(folder);
 
+            Diary savedDiary = diaryRepository.save(diary);
+
+            // 3. 이미지 엔티티 생성 및 저장
+            rawPins.stream()
+                    .sorted(Comparator.comparing(ImageMetaData::timestamp))
+                    .map(meta -> {
+                        PlaceInfo placeInfo = googlePlacesUtil.getExactPlaceInfo(meta.latitude(), meta.longitude());
+
+                        Image imageEntity = Image.builder()
+                                .diary(savedDiary)
+                                .latitude(meta.latitude())
+                                .longitude(meta.longitude())
+                                .timestamp(meta.timestamp())
+                                .fileName(meta.fileName())
+                                .fileUrl(findFileUrl(savedPaths, meta.fileName())) // 파일명으로 URL 매핑
+                                .location(placeInfo.name())
+                                .vicinity(placeInfo.vicinity())
+                                .build();
+
+                        imageRepository.save(imageEntity); // DB 저장
+                        savedDiary.addImage(imageEntity);
+
+                        return new PinResponse(
+                                meta.latitude(),
+                                meta.longitude(),
+                                meta.timestamp(),
+                                meta.fileName(),
+                                placeInfo.name(),
+                                placeInfo.vicinity()
+                        );
+                    })
+                    .collect(Collectors.toList());
+
             // 4. 응답 반환
-            return new DiaryResponse(saved.getId(), pinResponses);
+            return new DiaryResponse(savedDiary.getId());
 
         } catch (Exception e) {
             log.error("❌ 일기 생성 중 예외 발생", e);
             throw e;
         }
+    }
+
+    // 저장된 파일 경로 찾는 간단한 유틸
+    private String findFileUrl(List<String> savedPaths, String fileName) {
+        return savedPaths.stream()
+                .filter(path -> path.contains(fileName))
+                .findFirst()
+                .orElse(null);
     }
 
     public DiaryDetailDto getDiaryById(Long id) {
