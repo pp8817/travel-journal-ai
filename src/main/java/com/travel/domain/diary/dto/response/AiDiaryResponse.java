@@ -1,6 +1,8 @@
 package com.travel.domain.diary.dto.response;
 
+import java.util.List;
+
 public record AiDiaryResponse(
         String title,
-        String diary
+        List<String> content
 ) {}

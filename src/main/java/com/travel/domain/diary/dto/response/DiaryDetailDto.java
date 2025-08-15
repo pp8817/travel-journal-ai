@@ -11,7 +11,7 @@ import java.util.List;
 public record DiaryDetailDto(
         Long diaryId,
         String title,
-        String content,
+        List<String> content,
         LocalDate travelDate,
         Visibility visibility,
         List<Image> images,

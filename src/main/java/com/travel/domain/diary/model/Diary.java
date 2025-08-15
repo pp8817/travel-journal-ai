@@ -27,7 +27,7 @@ public class Diary extends BaseEntity{
     private String title;
 
     @Column(name = "content", nullable = false)
-    private String content;
+    private List<String> content;
 
     @Column(name = "travel_date", nullable = false)
     private LocalDate travelDate; // 현재 일기가 몇 일차인지
