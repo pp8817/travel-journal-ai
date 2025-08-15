@@ -22,7 +22,7 @@ public class DiaryListDto {
 
         return DiaryListDto.builder()
                 .id(diary.getId())
-                .content(getFirstSentence(diary.getContent()))
+                .content(diary.getContent().get(0))
                 .image(diary.getImages().get(0))
                 .hashtags(diary.getHashtags())
                 .travelDate(diary.getTravelDate())

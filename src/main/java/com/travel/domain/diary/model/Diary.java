@@ -27,7 +27,7 @@ public class Diary extends BaseEntity{
     private String title;
 
     @Column(name = "content", nullable = false)
-    private String content;
+    private List<String> content;
 
     @Column(name = "travel_date", nullable = false)
     private LocalDate travelDate; // 현재 일기가 몇 일차인지
@@ -37,6 +37,7 @@ public class Diary extends BaseEntity{
     private Visibility visibility = Visibility.PRIVATE; // 기본값: private으로 설정, 논의 후 수정 필요
 
 
+    @Builder.Default
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 

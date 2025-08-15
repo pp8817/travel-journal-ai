@@ -16,7 +16,7 @@ public class DiaryMapper {
     public static Diary toDiaryEntity(CreateDiaryRequest request, AiDiaryResponse aiDiaryResponse, List<String> savedPaths, List<String> hashtags) {
         Diary diary = Diary.builder()
                 .title(aiDiaryResponse.title()) // 추후 개선
-                .content(aiDiaryResponse.diary())
+                .content(aiDiaryResponse.content())
                 .travelDate(request.date())
                 .visibility(request.visibility())
                 .build();

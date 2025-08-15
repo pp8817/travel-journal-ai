@@ -14,7 +14,7 @@ public record FolderDetailResponse(
     public record DiarySummary(
             Long diaryId,
             String title,
-            String content,
+            List<String> content,
             LocalDate travelDate,
             List<Image> images,
             List<String> hashtags
