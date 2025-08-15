@@ -24,7 +24,7 @@ server:
 
 ai:
   server:
-    url: https://ce19795ee13d.ngrok-free.app
+    url: https://cbd13bee0a8f.ngrok-free.app
 
 google:
   maps:
