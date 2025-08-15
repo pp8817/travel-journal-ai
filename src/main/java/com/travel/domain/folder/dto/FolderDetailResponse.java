@@ -1,6 +1,6 @@
 package com.travel.domain.folder.dto;
 
-import com.travel.domain.image.model.Image;
+import com.travel.domain.image.dto.ImageDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +16,7 @@ public record FolderDetailResponse(
             String title,
             List<String> content,
             LocalDate travelDate,
-            List<Image> images,
+            List<ImageDto> images,
             List<String> hashtags
     ) {}
 }

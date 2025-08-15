@@ -6,6 +6,7 @@ import com.travel.domain.folder.dto.FolderListResponse;
 import com.travel.domain.folder.dto.FolderRequestDto;
 import com.travel.domain.folder.model.Folder;
 import com.travel.domain.folder.repository.FolderRepository;
+import com.travel.domain.image.dto.ImageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,16 @@ public class FolderService {
                         diary.getTitle(),
                         diary.getContent(),
                         diary.getTravelDate(),
-                        diary.getImages(),
+                        diary.getImages().stream().map(image ->
+                                new ImageDto(
+                                        image.getLatitude(),
+                                        image.getLongitude(),
+                                        image.getTimestamp(),
+                                        image.getFileName(),
+                                        image.getLocation(),
+                                        image.getVicinity(),
+                                        image.getFileUrl()
+                                )).toList(),
                         diary.getHashtags()
                 ))
                 .toList();

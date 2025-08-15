@@ -1,5 +1,6 @@
 package com.travel.domain.image.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.domain.diary.model.Diary;
 import com.travel.global.BaseEntity;
 import jakarta.persistence.*;
@@ -23,6 +24,7 @@ public class Image extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "diary_id", nullable = false)
+    @JsonIgnore
     private Diary diary;
 
     private Double latitude;
