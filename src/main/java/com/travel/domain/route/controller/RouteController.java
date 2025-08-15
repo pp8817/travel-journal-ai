@@ -31,6 +31,6 @@ public class RouteController {
 
         System.out.println("받은 요청: " + request);
 
-        return ResponseEntity.ok("요청이 정상 접수");
+        return ResponseEntity.ok("요청 정상 접수");
     }
 }

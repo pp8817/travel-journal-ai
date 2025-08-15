@@ -12,5 +12,5 @@ public class RouteRequest {
     private String transport;
     private Double latitude;
     private Double longitude;
-    private List<MultipartFile> images; // 이미지 업로드 파일
+    private List<MultipartFile> images;
 }
