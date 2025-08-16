@@ -25,24 +25,26 @@ public class Diary extends BaseEntity{
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Lob
     @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "travel_date", nullable = false)
     private LocalDate travelDate; // 현재 일기가 몇 일차인지
 
-    @Column(name = "location", nullable = false)
-    private String location;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", nullable = false)
     private Visibility visibility = Visibility.PRIVATE; // 기본값: private으로 설정, 논의 후 수정 필요
 
-    @Column(name = "image_paths", nullable = false)
+    @ElementCollection
+    @CollectionTable(name = "diary_images", joinColumns = @JoinColumn(name = "diary_id"))
+    @Column(name = "image_path")
+    @Builder.Default
     private List<String> imagePaths = new ArrayList<>();
 
-    @Column(name = "hashtags", nullable = false)
+    @ElementCollection
+    @CollectionTable(name = "diary_hashtags", joinColumns = @JoinColumn(name = "diary_id"))
+    @Column(name = "hashtag")
+    @Builder.Default
     private List<String> hashtags = new ArrayList<>();
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -68,5 +70,9 @@ public class Diary extends BaseEntity{
 
     public void addAllTags(List<String> hashtags) {
         this.hashtags.addAll(hashtags);
+    }
+
+    public void setFolder(Folder folder) {
+        this.folder = folder;
     }
 }

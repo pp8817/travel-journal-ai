@@ -3,6 +3,7 @@ package com.travel.domain.diary.dto.response;
 
 import com.travel.domain.diary.model.Diary;
 import com.travel.domain.diary.model.Visibility;
+import com.travel.domain.image.model.Image;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,16 +11,16 @@ import java.util.List;
 public record DiaryDetailDto(
         Long diaryId,
         String title,
-        String content,
+        List<String> content,
         LocalDate travelDate,
         Visibility visibility,
-        List<String> hashtags,
-        List<String> imageUrl
+        List<Image> images,
+        List<String> hashtags
 ) {
     public static DiaryDetailDto from(Diary diary) {
-        List<String> imageUrl = null;
-        if (diary.getImagePaths() != null && !diary.getImagePaths().isEmpty()) {
-            imageUrl = diary.getImagePaths();  // 첫 번째 이미지 URL 사용
+        List<Image> images = null;
+        if (diary.getImages() != null && !diary.getImages().isEmpty()) {
+            images = diary.getImages();
         }
 
         List<String> hashtags = null;
@@ -33,7 +34,7 @@ public record DiaryDetailDto(
                 diary.getContent(),
                 diary.getTravelDate(),
                 diary.getVisibility(),
-                imageUrl,
+                images,
                 hashtags
         );
     }

@@ -6,6 +6,7 @@ import com.travel.domain.folder.dto.FolderListResponse;
 import com.travel.domain.folder.dto.FolderRequestDto;
 import com.travel.domain.folder.model.Folder;
 import com.travel.domain.folder.repository.FolderRepository;
+import com.travel.domain.image.dto.ImageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,16 @@ public class FolderService {
                         diary.getTitle(),
                         diary.getContent(),
                         diary.getTravelDate(),
-                        diary.getImagePaths().get(0),
+                        diary.getImages().stream().map(image ->
+                                new ImageDto(
+                                        image.getLatitude(),
+                                        image.getLongitude(),
+                                        image.getTimestamp(),
+                                        image.getFileName(),
+                                        image.getLocation(),
+                                        image.getVicinity(),
+                                        image.getFileUrl()
+                                )).toList(),
                         diary.getHashtags()
                 ))
                 .toList();
@@ -57,14 +67,13 @@ public class FolderService {
 
         return folders.stream()
                 .map(folder -> {
-                    // 첫 번째 일기 (있다면)
                     Diary firstDiary = folder.getDiaries().stream()
-                            .filter(diary -> diary.getImagePaths() != null && !diary.getImagePaths().isEmpty())
+                            .filter(diary -> diary.getImages() != null && !diary.getImages().isEmpty())
                             .findFirst()
                             .orElse(null);
 
-                    String image = (firstDiary != null && !firstDiary.getImagePaths().isEmpty())
-                            ? firstDiary.getImagePaths().get(0)
+                    String firstImageUrl = (firstDiary != null && !firstDiary.getImages().isEmpty())
+                            ? firstDiary.getImages().get(0).getFileUrl()
                             : null;
 
                     List<String> tags = (firstDiary != null && firstDiary.getHashtags() != null)
@@ -76,7 +85,7 @@ public class FolderService {
                             folder.getTitle(),
                             folder.getStartDate(),
                             folder.getEndDate(),
-                            image,
+                            firstImageUrl,
                             tags
                     );
                 })

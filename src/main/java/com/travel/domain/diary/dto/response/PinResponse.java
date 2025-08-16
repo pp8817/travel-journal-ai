@@ -6,5 +6,7 @@ public record PinResponse(
         Double latitude,
         Double longitude,
         LocalDateTime timestamp,
-        String fileName
+        String fileName,
+        String location,
+        String vicinity
 ) {}

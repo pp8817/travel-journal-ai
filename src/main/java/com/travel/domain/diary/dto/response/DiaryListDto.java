@@ -1,6 +1,7 @@
 package com.travel.domain.diary.dto.response;
 
 import com.travel.domain.diary.model.Diary;
+import com.travel.domain.image.model.Image;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,7 +14,7 @@ public class DiaryListDto {
 
     private Long id;
     private String content;
-    private List<String> imageUrl;
+    private Image image;
     private List<String> hashtags;
     private LocalDate travelDate;
 
@@ -21,8 +22,8 @@ public class DiaryListDto {
 
         return DiaryListDto.builder()
                 .id(diary.getId())
-                .content(getFirstSentence(diary.getContent()))
-                .imageUrl(diary.getImagePaths())
+                .content(diary.getContent().get(0))
+                .image(diary.getImages().get(0))
                 .hashtags(diary.getHashtags())
                 .travelDate(diary.getTravelDate())
                 .build();

@@ -1,5 +1,7 @@
 package com.travel.domain.folder.dto;
 
+import com.travel.domain.image.dto.ImageDto;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,9 +14,9 @@ public record FolderDetailResponse(
     public record DiarySummary(
             Long diaryId,
             String title,
-            String content,
+            List<String> content,
             LocalDate travelDate,
-            String imageUrl,
+            List<ImageDto> images,
             List<String> hashtags
     ) {}
 }
